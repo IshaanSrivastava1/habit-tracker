@@ -7,6 +7,7 @@ import {
   Pressable,
   TextInput,
   Alert,
+  Platform,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -41,6 +42,29 @@ function currentStreak(dates) {
     cursor.setDate(cursor.getDate() - 1); // step back one day and keep counting
   }
   return streak;
+}
+
+// A yes/no confirmation that works on BOTH the web app and the phone app.
+// (On web, react-native's Alert does nothing, so we use the browser's confirm.)
+function confirmDelete(habit, onConfirm) {
+  const message = `Remove "${habit}"?`;
+  if (Platform.OS === 'web') {
+    if (window.confirm(message)) onConfirm();
+    return;
+  }
+  Alert.alert('Delete habit', message, [
+    { text: 'Cancel', style: 'cancel' },
+    { text: 'Delete', style: 'destructive', onPress: onConfirm },
+  ]);
+}
+
+// A simple message popup that works on both web and phone.
+function notify(message) {
+  if (Platform.OS === 'web') {
+    window.alert(message);
+  } else {
+    Alert.alert('Heads up', message);
+  }
 }
 
 export default function App() {
@@ -99,23 +123,16 @@ export default function App() {
     const name = newHabit.trim();
     if (name === '') return;
     if (habits.includes(name)) {
-      Alert.alert('Already there', `"${name}" is already on your list.`);
+      notify(`"${name}" is already on your list.`);
       return;
     }
     setHabits((previous) => [...previous, name]);
     setNewHabit('');
   }
 
-  // Press and hold a card: ask to delete it.
-  function confirmDelete(habit) {
-    Alert.alert('Delete habit', `Remove "${habit}"?`, [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () => setHabits((previous) => previous.filter((h) => h !== habit)),
-      },
-    ]);
+  // Actually remove a habit from the list.
+  function deleteHabit(habit) {
+    setHabits((previous) => previous.filter((h) => h !== habit));
   }
 
   const today = todayKey();
@@ -149,7 +166,8 @@ export default function App() {
           <Pressable
             key={habit}
             onPress={() => toggleHabit(habit)}
-            onLongPress={() => confirmDelete(habit)}
+            onLongPress={() => confirmDelete(habit, () => deleteHabit(habit))}
+            delayLongPress={400}
             style={[styles.card, isDone && styles.cardDone]}
           >
             {/* Left side: habit name, with a streak line underneath it */}
@@ -185,6 +203,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f7',
     paddingHorizontal: 20,
     paddingTop: 70,
+    userSelect: 'none', // don't let the browser select text on long-press (web)
   },
   title: {
     fontSize: 34,

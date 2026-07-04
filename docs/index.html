@@ -5,14 +5,26 @@
     <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Habit Tracker</title>
-    <!-- Make it launch full-screen (no Safari bars) when added to the home screen -->
+    <!-- Added by scripts/patch-web.js -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Habit Tracker" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="theme-color" content="#f2f2f7" />
-    <!-- The icon iPhone uses on the home screen -->
     <link rel="apple-touch-icon" href="/habit-tracker/apple-touch-icon.png" />
+    <style id="habit-tracker-head-extras">
+      /* Stop the browser selecting text / showing the copy menu on long-press. */
+      html, body, #root {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+      /* ...but still allow typing/selecting inside the text box. */
+      input, textarea {
+        -webkit-user-select: text;
+        user-select: text;
+      }
+    </style>
     <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
     <style id="expo-reset">
       /* These styles make the body full-height */
@@ -40,6 +52,6 @@
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="/habit-tracker/_expo/static/js/web/index-b040ad577eb321599dc3bc9302da942f.js" defer></script>
+  <script src="/habit-tracker/_expo/static/js/web/index-5ee29fc3558c5000d586c59d49654137.js" defer></script>
 </body>
 </html>
